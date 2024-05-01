@@ -2,6 +2,7 @@ package com.hits.imageeditor
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +17,7 @@ import com.hits.imageeditor.imageEditingActivity.ImageEditingActivity
 class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    private var chosenImageURI:Uri? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?, ) {
@@ -28,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         }
         binding.rotateToImageEditingActivity.setOnClickListener {
              Intent(this@MainActivity, ImageEditingActivity::class.java).also {
+                 it.putExtra("Debug", chosenImageURI )
                  startActivity(it)
              }
         }
@@ -41,6 +44,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+            chosenImageURI = data?.data
             binding.imgGallery.setImageURI(data?.data)
     }
 
