@@ -9,6 +9,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.hits.imageeditor.databinding.ActivityMainBinding
+import com.hits.imageeditor.imageEditingActivity.ImageEditingActivity
 
 
 
@@ -16,9 +17,6 @@ class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
-    companion object {
-        val IMAGE_REQUEST_CODE = 100
-    }
 
     override fun onCreate(savedInstanceState: Bundle?, ) {
 
@@ -27,6 +25,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.imageAddButton.setOnClickListener{
             ImagePicker.with(this).start()
+        }
+        binding.rotateToImageEditingActivity.setOnClickListener {
+             Intent(this@MainActivity, ImageEditingActivity::class.java).also {
+                 startActivity(it)
+             }
         }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
