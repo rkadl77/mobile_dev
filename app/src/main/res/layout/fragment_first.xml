@@ -45,5 +45,15 @@
             app:layout_constraintTop_toBottomOf="@+id/imageView"
             app:layout_constraintVertical_bias="0.342" />
 
+        <Button
+            android:id="@+id/secondAlghoritm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="42dp"
+            android:layout_marginTop="1dp"
+            android:text="Button"
+            app:layout_constraintStart_toEndOf="@+id/firstAlghoritm"
+            app:layout_constraintTop_toTopOf="@+id/firstAlghoritm" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

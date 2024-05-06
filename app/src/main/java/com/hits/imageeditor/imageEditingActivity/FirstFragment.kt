@@ -1,25 +1,19 @@
 package com.hits.imageeditor.imageEditingActivity
 
-import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.hits.imageeditor.R
 import com.hits.imageeditor.databinding.FragmentFirstBinding
 import java.io.InputStream
-import java.io.ByteArrayOutputStream
-
 
 class FirstFragment : Fragment() {
 
@@ -41,7 +35,6 @@ class FirstFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         chosenImageUri = activity?.intent?.getParcelableExtra("Debug")
-
         chosenImageBitmap = chosenImageUri?.let { uri ->
             context?.let { context ->
                 getBitmapFromUri(context, uri)
@@ -58,6 +51,18 @@ class FirstFragment : Fragment() {
             chosenImageBitmap?.let { bitmap ->
                 val rotatedImage = rotateImage(bitmap, 90f)
                 binding.imageView.setImageBitmap(rotatedImage)
+
+
+            }
+        }
+        binding.secondAlghoritm.setOnClickListener {
+            chosenImageBitmap?.let { bitmap ->
+
+                val newWidth = 400 // ваша новая ширина
+                val newHeight = 400// ваша новая высота
+                val resizedBitmap = resizeImage(bitmap, newWidth, newHeight)
+                // Обработка измененного изображения
+                binding.imageView.setImageBitmap(resizedBitmap)
             }
         }
     }
@@ -92,5 +97,26 @@ class FirstFragment : Fragment() {
             matrix,
             true
         )
+    }
+
+    private fun resizeImage(inputBitmap: Bitmap, newWidth: Int, newHeight: Int): Bitmap {
+        val oldWidth = inputBitmap.width
+        val oldHeight = inputBitmap.height
+
+        val newBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
+
+        val scaleX = oldWidth.toFloat() / newWidth
+        val scaleY = oldHeight.toFloat() / newHeight
+
+        for (x in 0 until newWidth) {
+            for (y in 0 until newHeight) {
+                val oldX = (x * scaleX).toInt()
+                val oldY = (y * scaleY).toInt()
+                val pixel = inputBitmap.getPixel(oldX, oldY)
+                newBitmap.setPixel(x, y, pixel)
+            }
+        }
+
+        return newBitmap
     }
 }

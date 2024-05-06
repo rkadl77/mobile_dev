@@ -29,10 +29,10 @@ class MainActivity : AppCompatActivity() {
             ImagePicker.with(this).start()
         }
         binding.rotateToImageEditingActivity.setOnClickListener {
-             Intent(this@MainActivity, ImageEditingActivity::class.java).also {
-                 it.putExtra("Debug", chosenImageURI )
-                 startActivity(it)
-             }
+            Intent(this@MainActivity, ImageEditingActivity::class.java).also {
+                it.putExtra("Debug", chosenImageURI )
+                startActivity(it)
+            }
         }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -44,8 +44,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-            chosenImageURI = data?.data
-            binding.imgGallery.setImageURI(data?.data)
+        chosenImageURI = data?.data
+        binding.imgGallery.setImageURI(data?.data)
     }
 
 }
