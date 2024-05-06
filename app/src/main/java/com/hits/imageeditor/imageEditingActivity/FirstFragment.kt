@@ -1,5 +1,13 @@
 package com.hits.imageeditor.imageEditingActivity
 
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.io.File
+import android.os.Environment
+import java.io.FileOutputStream
+import java.io.IOException
+import android.widget.Toast
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -13,9 +21,6 @@ import androidx.navigation.fragment.findNavController
 import com.hits.imageeditor.R
 import com.hits.imageeditor.databinding.FragmentFirstBinding
 import java.io.InputStream
-import android.graphics.Canvas
-import android.graphics.Matrix
-import android.graphics.Paint
 
 
 class FirstFragment : Fragment() {
@@ -54,18 +59,15 @@ class FirstFragment : Fragment() {
             chosenImageBitmap?.let { bitmap ->
                 val rotatedImage = rotateImage(bitmap, 90)
                 binding.imageView.setImageBitmap(rotatedImage)
-
-
             }
         }
         binding.secondAlghoritm.setOnClickListener {
             chosenImageBitmap?.let { bitmap ->
                 val scaleFactor = 0.5f // Пример коэффициента масштабирования
-                val resizedBitmap = resizeImage(bitmap, scaleFactor)
+                val resizedBitmap = scaleImage(bitmap, scaleFactor)
                 binding.imageView.setImageBitmap(resizedBitmap)
             }
         }
-
 
         binding.gaussButton.setOnClickListener {
             chosenImageBitmap?.let { bitmap ->
@@ -75,13 +77,47 @@ class FirstFragment : Fragment() {
             }
         }
 
+        binding.buttonFirst.setOnClickListener {
+            chosenImageBitmap?.let { bitmap ->
+                // Сохранение изображения
+                saveImageToStorage(bitmap)
+            }
+        }
+
+
         binding.buttonBack.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_MainActivity)
         }
 
-
-
     }
+    private fun saveImageToStorage(bitmap: Bitmap) {
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val fileName = "ImageEditor_$timeStamp.jpg"
+
+        val storageDir: File? = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val imageFile = File(storageDir, fileName)
+
+        try {
+            val fileOutputStream = FileOutputStream(imageFile)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
+            fileOutputStream.flush()
+            fileOutputStream.close()
+
+            // Уведомление об успешном сохранении
+            showToast("Изображение успешно сохранено")
+        } catch (e: IOException) {
+            e.printStackTrace()
+            // Обработка ошибки сохранения
+            showToast("Не удалось сохранить изображение")
+        }
+    }
+
+
+    // Функция для отображения всплывающего сообщения
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -120,24 +156,52 @@ class FirstFragment : Fragment() {
         return newBitmap
     }
 
-    private fun resizeImage(inputBitmap: Bitmap, scaleFactor: Float): Bitmap {
-        val oldWidth = inputBitmap.width
-        val oldHeight = inputBitmap.height
+    private fun scaleImage(inputBitmap: Bitmap, scaleFactor: Float): Bitmap {
+        val width = inputBitmap.width
+        val height = inputBitmap.height
+        val newWidth = (width * scaleFactor).toInt()
+        val newHeight = (height * scaleFactor).toInt()
 
-        val newWidth = (oldWidth * scaleFactor).toInt()
-        val newHeight = (oldHeight * scaleFactor).toInt()
+        val outputBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
 
-        val newBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
+        val xRatio = width.toFloat() / newWidth.toFloat()
+        val yRatio = height.toFloat() / newHeight.toFloat()
 
-        val canvas = Canvas(newBitmap)
+        val interpolateMethod = if (scaleFactor > 1.0f) ::bilinearInterpolate else ::trilinearInterpolate
 
-        val matrix = Matrix()
-        matrix.setScale(scaleFactor, scaleFactor)
+        for (x in 0 until newWidth) {
+            for (y in 0 until newHeight) {
+                val originX = (x * xRatio).toInt()
+                val originY = (y * yRatio).toInt()
+                val xDiff = (x * xRatio) - originX
+                val yDiff = (y * yRatio) - originY
 
-        canvas.drawBitmap(inputBitmap, matrix, Paint())
+                val topLeftPixel = inputBitmap.getPixel(originX, originY)
+                val topRightPixel = inputBitmap.getPixel(originX + 1, originY)
+                val bottomLeftPixel = inputBitmap.getPixel(originX, originY + 1)
+                val bottomRightPixel = inputBitmap.getPixel(originX + 1, originY + 1)
 
-    chosenImageBitmap = newBitmap
-        return newBitmap
+                val interpolatedPixel = interpolateMethod(topLeftPixel, topRightPixel, bottomLeftPixel, bottomRightPixel, xDiff, yDiff)
+
+                outputBitmap.setPixel(x, y, interpolatedPixel)
+            }
+        }
+
+        chosenImageBitmap = outputBitmap
+        return  outputBitmap
+    }
+
+    private fun bilinearInterpolate(topLeft: Int, topRight: Int, bottomLeft: Int, bottomRight: Int, xDiff: Float, yDiff: Float): Int {
+        val top = topLeft + (xDiff * (topRight - topLeft)).toInt()
+        val bottom = bottomLeft + (xDiff * (bottomRight - bottomLeft)).toInt()
+        return top + (yDiff * (bottom - top)).toInt()
+    }
+
+    private fun trilinearInterpolate(topLeft: Int, topRight: Int, bottomLeft: Int, bottomRight: Int, xDiff: Float, yDiff: Float): Int {
+        val top = bilinearInterpolate(topLeft and 0xFF0000 shr 16, topRight and 0xFF0000 shr 16, bottomLeft and 0xFF0000 shr 16, bottomRight and 0xFF0000 shr 16, xDiff, yDiff)
+        val bottom = bilinearInterpolate(topLeft and 0x00FF00 shr 8, topRight and 0x00FF00 shr 8, bottomLeft and 0x00FF00 shr 8, bottomRight and 0x00FF00 shr 8, xDiff, yDiff)
+        val blue = bilinearInterpolate(topLeft and 0x0000FF, topRight and 0x0000FF, bottomLeft and 0x0000FF, bottomRight and 0x0000FF, xDiff, yDiff)
+        return 0xFF000000.toInt() or (top shl 16) or (bottom shl 8) or blue
     }
 
     private fun gaussianBlur(inputBitmap: Bitmap, radius: Int): Bitmap {
