@@ -3,7 +3,6 @@ package com.hits.imageeditor.imageEditingActivity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -65,9 +64,21 @@ class FirstFragment : Fragment() {
                 binding.imageView.setImageBitmap(resizedBitmap)
             }
         }
+
+        binding.gaussButton.setOnClickListener {
+            chosenImageBitmap?.let { bitmap ->
+                val blurBitmap = gaussianBlur(bitmap, 12)
+                // Обработка измененного изображения
+                binding.imageView.setImageBitmap(blurBitmap)
+            }
+        }
+
         binding.buttonBack.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_MainActivity)
         }
+
+
+
     }
 
 
@@ -131,5 +142,78 @@ class FirstFragment : Fragment() {
         return newBitmap
     }
 
+    private fun gaussianBlur(inputBitmap: Bitmap, radius: Int): Bitmap {
+        val width = inputBitmap.width
+        val height = inputBitmap.height
+        val pixels = IntArray(width * height)
+        inputBitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+
+        val blurredBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val blurredPixels = IntArray(width * height)
+        val weights = calculateWeights(radius.toDouble())
+
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                var red = 0.0
+                var green = 0.0
+                var blue = 0.0
+                var alpha = 0.0
+                var weightSum = 0.0
+
+                for (j in -radius..radius) {
+                    for (i in -radius..radius) {
+                        val currentX = x + i
+                        val currentY = y + j
+
+                        if (currentX in 0 until width && currentY in 0 until height) {
+                            val currentPixel = pixels[currentY * width + currentX]
+                            val weight = weights[j + radius][i + radius]
+
+                            alpha += weight * (currentPixel ushr 24 and 0xFF)
+                            red += weight * (currentPixel ushr 16 and 0xFF)
+                            green += weight * (currentPixel ushr 8 and 0xFF)
+                            blue += weight * (currentPixel and 0xFF)
+
+                            weightSum += weight
+                        }
+                    }
+                }
+
+                alpha /= weightSum
+                red /= weightSum
+                green /= weightSum
+                blue /= weightSum
+
+                blurredPixels[y * width + x] = ((alpha.toInt() shl 24) or (red.toInt() shl 16) or (green.toInt() shl 8) or blue.toInt())
+            }
+        }
+
+        blurredBitmap.setPixels(blurredPixels, 0, width, 0, 0, width, height)
+        chosenImageBitmap = blurredBitmap
+        return blurredBitmap
+    }
+
+    private fun calculateWeights(sigma: Double): Array<DoubleArray> {
+        val radius = (sigma * 3).toInt()
+        val weights = Array(2 * radius + 1) { DoubleArray(2 * radius + 1) { 0.0 } }
+        val sigmaSquaredTimesTwo = 2 * sigma * sigma
+        var sum = 0.0
+
+        for (j in -radius..radius) {
+            for (i in -radius..radius) {
+                val distanceSquared = (i * i + j * j).toDouble()
+                weights[j + radius][i + radius] = Math.exp(-distanceSquared / sigmaSquaredTimesTwo) / (Math.PI * sigmaSquaredTimesTwo)
+                sum += weights[j + radius][i + radius]
+            }
+        }
+
+        for (j in weights.indices) {
+            for (i in weights[j].indices) {
+                weights[j][i] /= sum
+            }
+        }
+
+        return weights
+    }
 
 }
