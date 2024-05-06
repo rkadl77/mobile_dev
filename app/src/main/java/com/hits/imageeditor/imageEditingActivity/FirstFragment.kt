@@ -13,6 +13,10 @@ import androidx.navigation.fragment.findNavController
 import com.hits.imageeditor.R
 import com.hits.imageeditor.databinding.FragmentFirstBinding
 import java.io.InputStream
+import android.graphics.Canvas
+import android.graphics.Matrix
+import android.graphics.Paint
+
 
 class FirstFragment : Fragment() {
 
@@ -56,14 +60,12 @@ class FirstFragment : Fragment() {
         }
         binding.secondAlghoritm.setOnClickListener {
             chosenImageBitmap?.let { bitmap ->
-
-                val newWidth = 400 // ваша новая ширина
-                val newHeight = 400// ваша новая высота
-                val resizedBitmap = resizeImage(bitmap, newWidth, newHeight)
-                // Обработка измененного изображения
+                val scaleFactor = 0.5f // Пример коэффициента масштабирования
+                val resizedBitmap = resizeImage(bitmap, scaleFactor)
                 binding.imageView.setImageBitmap(resizedBitmap)
             }
         }
+
 
         binding.gaussButton.setOnClickListener {
             chosenImageBitmap?.let { bitmap ->
@@ -80,8 +82,6 @@ class FirstFragment : Fragment() {
 
 
     }
-
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -120,25 +120,23 @@ class FirstFragment : Fragment() {
         return newBitmap
     }
 
-    private fun resizeImage(inputBitmap: Bitmap, newWidth: Int, newHeight: Int): Bitmap {
+    private fun resizeImage(inputBitmap: Bitmap, scaleFactor: Float): Bitmap {
         val oldWidth = inputBitmap.width
         val oldHeight = inputBitmap.height
 
+        val newWidth = (oldWidth * scaleFactor).toInt()
+        val newHeight = (oldHeight * scaleFactor).toInt()
+
         val newBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
 
-        val scaleX = oldWidth.toFloat() / newWidth
-        val scaleY = oldHeight.toFloat() / newHeight
+        val canvas = Canvas(newBitmap)
 
-        for (x in 0 until newWidth) {
-            for (y in 0 until newHeight) {
-                val oldX = (x * scaleX).toInt()
-                val oldY = (y * scaleY).toInt()
-                val pixel = inputBitmap.getPixel(oldX, oldY)
-                newBitmap.setPixel(x, y, pixel)
-            }
-        }
+        val matrix = Matrix()
+        matrix.setScale(scaleFactor, scaleFactor)
 
-        chosenImageBitmap = newBitmap
+        canvas.drawBitmap(inputBitmap, matrix, Paint())
+
+    chosenImageBitmap = newBitmap
         return newBitmap
     }
 
