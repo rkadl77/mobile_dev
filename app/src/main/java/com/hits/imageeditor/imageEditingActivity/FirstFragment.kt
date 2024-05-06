@@ -49,7 +49,7 @@ class FirstFragment : Fragment() {
 
         binding.firstAlghoritm.setOnClickListener {
             chosenImageBitmap?.let { bitmap ->
-                val rotatedImage = rotateImage(bitmap, 90f)
+                val rotatedImage = rotateImage(bitmap, 90)
                 binding.imageView.setImageBitmap(rotatedImage)
 
 
@@ -85,18 +85,24 @@ class FirstFragment : Fragment() {
         return null
     }
 
-    private fun rotateImage(capturedImage: Bitmap, rotationAngle: Float): Bitmap {
-        val matrix = Matrix()
-        matrix.postRotate(rotationAngle)
-        return Bitmap.createBitmap(
-            capturedImage,
-            0,
-            0,
-            capturedImage.width,
-            capturedImage.height,
-            matrix,
-            true
-        )
+    private fun rotateImage(bitmap: Bitmap, degrees: Int): Bitmap {
+        val width = bitmap.width
+        val height = bitmap.height
+
+        val newBitmap = Bitmap.createBitmap(height, width, Bitmap.Config.ARGB_8888)
+
+        for (x in 0 until width) {
+            for (y in 0 until height) {
+                val newX = if (degrees == 90 || degrees == 270) height - y - 1 else y
+                val newY = if (degrees == 90 || degrees == 270) x else width - x - 1
+
+                val pixel = bitmap.getPixel(x, y)
+                newBitmap.setPixel(newX, newY, pixel)
+            }
+        }
+
+        chosenImageBitmap = newBitmap
+        return newBitmap
     }
 
     private fun resizeImage(inputBitmap: Bitmap, newWidth: Int, newHeight: Int): Bitmap {
@@ -117,6 +123,7 @@ class FirstFragment : Fragment() {
             }
         }
 
+        chosenImageBitmap = newBitmap
         return newBitmap
     }
 }
