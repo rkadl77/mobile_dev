@@ -19,6 +19,8 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_image_editing" />
+    <include
+        layout="@layout/content_image_editing"
+        android:layout_height="651dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -25,13 +26,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(binding.root)
-        binding.imageAddButton.setOnClickListener{
+        binding.imgGallery.setOnClickListener{
             ImagePicker.with(this).start()
         }
         binding.rotateToImageEditingActivity.setOnClickListener {
-            Intent(this@MainActivity, ImageEditingActivity::class.java).also {
-                it.putExtra("Debug", chosenImageURI )
-                startActivity(it)
+            if (chosenImageURI != null) {
+                Intent(this@MainActivity, ImageEditingActivity::class.java).also { intent ->
+                    intent.putExtra("Debug", chosenImageURI)
+                    startActivity(intent)
+                }
+            } else {
+                showToast("Для начала выберете фото")
             }
         }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -46,6 +51,10 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         chosenImageURI = data?.data
         binding.imgGallery.setImageURI(data?.data)
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
 }

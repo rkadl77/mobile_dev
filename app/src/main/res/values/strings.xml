@@ -6,4 +6,7 @@
     <string name="next">Сохранить</string>
     <string name="previous">Назад</string>
     <string name="editingPhotoButtonText">Редактировать</string>
+    <string name="resizeButtonText">Resize</string>
+    <string name="rotateButtonText">Rotate</string>
+    <string name="projectName">imageEditor</string>
 </resources>
