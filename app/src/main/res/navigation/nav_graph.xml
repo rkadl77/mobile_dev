@@ -11,10 +11,16 @@
         android:label="@string/first_fragment_label"
         tools:layout="@layout/fragment_first">
 
+        <!-- Действие для перехода из FirstFragment в MainActivity -->
+        <action
+            android:id="@+id/action_FirstFragment_to_MainActivity"
+            app:destination="@id/mainActivity" />
+
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
             app:destination="@id/SecondFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/SecondFragment"
         android:name="com.hits.imageeditor.imageEditingActivity.SecondFragment"
@@ -24,5 +30,13 @@
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
+
     </fragment>
+
+    <!-- Добавление фрагмента MainActivity -->
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.hits.imageeditor.MainActivity"
+        android:label="@string/app_name" />
+
 </navigation>

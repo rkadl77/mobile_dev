@@ -65,7 +65,11 @@ class FirstFragment : Fragment() {
                 binding.imageView.setImageBitmap(resizedBitmap)
             }
         }
+        binding.buttonBack.setOnClickListener {
+            findNavController().navigate(R.id.action_FirstFragment_to_MainActivity)
+        }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -126,4 +130,6 @@ class FirstFragment : Fragment() {
         chosenImageBitmap = newBitmap
         return newBitmap
     }
+
+
 }
