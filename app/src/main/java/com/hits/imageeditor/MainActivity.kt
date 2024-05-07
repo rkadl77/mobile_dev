@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
             } else {
-                showToast("Для начала выберете фото")
+                showToast("You need to choose photo")
             }
         }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->

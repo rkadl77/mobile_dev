@@ -70,7 +70,7 @@ class FirstFragment : Fragment() {
             }
         }
 
-        binding.gaussButton.setOnClickListener {
+        binding.gausinButton.setOnClickListener {
             chosenImageBitmap?.let { bitmap ->
                 val blurBitmap = gaussianBlur(bitmap, 12)
                 // Обработка измененного изображения
@@ -106,6 +106,11 @@ class FirstFragment : Fragment() {
             findNavController().navigate(R.id.action_FirstFragment_to_MainActivity)
         }
 
+        binding.undoButton.setOnClickListener {
+            chosenImageUri = activity?.intent?.getParcelableExtra("Debug")
+            binding.imageView.setImageURI(chosenImageUri)
+        }
+
     }
     private fun saveImageToStorage(bitmap: Bitmap) {
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
@@ -121,11 +126,11 @@ class FirstFragment : Fragment() {
             fileOutputStream.close()
 
             // Уведомление об успешном сохранении
-            showToast("Изображение успешно сохранено")
+            showToast("Image successfully saved")
         } catch (e: IOException) {
             e.printStackTrace()
             // Обработка ошибки сохранения
-            showToast("Не удалось сохранить изображение")
+            showToast("Image doesn't saved")
         }
     }
 

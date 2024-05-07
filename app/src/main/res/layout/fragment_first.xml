@@ -1,108 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="16dp"
     tools:context=".imageEditingActivity.FirstFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp">
+    <Button
+        android:id="@+id/button_first"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="700dp"
+        android:text="@string/next"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/button_first"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="600dp"
-            android:text="@string/next"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="415dp"
+        android:layout_height="350dp"
+        android:src="@android:drawable/screen_background_dark_transparent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.276" />
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="326dp"
-            android:layout_height="281dp"
-            android:src="@android:drawable/screen_background_dark_transparent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.49"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.185" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.238">
 
-        <Button
-            android:id="@+id/firstAlghoritm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/rotateButtonText"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.197"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView"
-            app:layout_constraintVertical_bias="0.274" />
-
-        <Button
-            android:id="@+id/secondAlghoritm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="42dp"
-            android:layout_marginTop="1dp"
-            android:text="@string/resizeButtonText"
-            app:layout_constraintStart_toEndOf="@+id/firstAlghoritm"
-            app:layout_constraintTop_toTopOf="@+id/firstAlghoritm" />
-
-        <Button
+        <ImageButton
             android:id="@+id/buttonBack"
-            android:layout_width="123dp"
-            android:layout_height="46dp"
-            android:text="Назад"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button_first"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView"
-            app:layout_constraintVertical_bias="1.0" />
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/arrow_sm_left_svgrepo_com"
+            tools:ignore="ContentDescription" />
 
-        <Button
-            android:id="@+id/gaussButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Гаусс"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.147"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/imageView"
-            app:layout_constraintVertical_bias="0.838" />
+        <ImageButton
+            android:id="@+id/undoButton"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/restart_svgrepo_com"
+            tools:ignore="ContentDescription" />
 
-        <Button
-            android:id="@+id/mosaicButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Мозайка"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.739"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.856" />
 
-        <Button
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView">
+
+
+        <ImageButton
+            android:id="@+id/firstAlghoritm"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@id/undoButton"
+            android:background="@android:color/transparent"
+            android:src="@drawable/rotate_360_svgrepo_com"
+            tools:ignore="ContentDescription,NotSibling" />
+
+        <ImageButton
+            android:id="@+id/secondAlghoritm"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@id/firstAlghoritm"
+            android:background="@android:color/transparent"
+            android:src="@drawable/resize_image_svgrepo_com"
+            tools:ignore="ContentDescription" />
+
+        <ImageButton
+            android:id="@+id/gausinButton"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@id/secondAlghoritm"
+            android:background="@android:color/transparent"
+            android:src="@drawable/blur_svgrepo_com"
+            tools:ignore="ContentDescription" />
+
+        <ImageButton
             android:id="@+id/negativeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Негатив"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.474"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.948" />
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@id/gausinButton"
+            android:background="@android:color/transparent"
+            android:src="@drawable/negative_svgrepo_com"
+            tools:ignore="ContentDescription" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+        <ImageButton
+            android:id="@+id/mosaicButton"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@id/negativeButton"
+            android:background="@android:color/transparent"
+            android:src="@drawable/mosaic_svgrepo_com"
+            tools:ignore="ContentDescription" />
+
+        <ImageButton
+            android:id="@+id/cubeButton"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@id/mosaicButton"
+            android:background="@android:color/transparent"
+            android:src="@drawable/cube_svgrepo_com"
+            tools:ignore="ContentDescription" />
+
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

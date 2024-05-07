@@ -1,12 +1,13 @@
 <resources>
     <string name="app_name">imageEditor</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
+    <string name="first_fragment_label">Editing</string>
     <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Сохранить</string>
-    <string name="previous">Назад</string>
-    <string name="editingPhotoButtonText">Редактировать</string>
+    <string name="next">Save</string>
+    <string name="previous">Back</string>
+    <string name="editingPhotoButtonText">Edit</string>
     <string name="resizeButtonText">Resize</string>
     <string name="rotateButtonText">Rotate</string>
     <string name="projectName">imageEditor</string>
+    <string name="GausseBlurButtonText">Gaussian Blur</string>
 </resources>
