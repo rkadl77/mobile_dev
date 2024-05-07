@@ -1,26 +1,27 @@
 package com.hits.imageeditor.imageEditingActivity
 
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.io.File
-import android.os.Environment
-import java.io.FileOutputStream
-import java.io.IOException
-import android.widget.Toast
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.hits.imageeditor.R
 import com.hits.imageeditor.databinding.FragmentFirstBinding
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.io.InputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 class FirstFragment : Fragment() {
@@ -84,6 +85,22 @@ class FirstFragment : Fragment() {
             }
         }
 
+
+        binding.mosaicButton.setOnClickListener {
+            chosenImageBitmap?.let { bitmap ->
+                val mosaicBitmap = mosaicFilter(bitmap, 20)
+                // Обработка измененного изображения
+                binding.imageView.setImageBitmap(mosaicBitmap)
+            }
+        }
+
+        binding.negativeButton.setOnClickListener {
+            chosenImageBitmap?.let { bitmap ->
+                val negativeBitmap = negativeFilter(bitmap)
+                // Обработка измененного изображения
+                binding.imageView.setImageBitmap(negativeBitmap)
+            }
+        }
 
         binding.buttonBack.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_MainActivity)
@@ -276,6 +293,90 @@ class FirstFragment : Fragment() {
         }
 
         return weights
+    }
+
+
+    fun mosaicFilter(bitmap: Bitmap, blockSize: Int): Bitmap {
+        // Создаем новый битмап для результата
+        val newBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
+
+        // Проходим по каждому блоку в изображении
+        for (x in 0 until bitmap.width step blockSize) {
+            for (y in 0 until bitmap.height step blockSize) {
+                // Вычисляем средний цвет для текущего блока
+                val avgColor = getAverageColor(bitmap, x, y, blockSize)
+
+                // Закрашиваем весь блок средним цветом
+                for (i in x until x + blockSize) {
+                    for (j in y until y + blockSize) {
+                        if (i < bitmap.width && j < bitmap.height) {
+                            newBitmap.setPixel(i, j, avgColor)
+                        }
+                    }
+                }
+            }
+        }
+        chosenImageBitmap = newBitmap
+        return newBitmap
+    }
+
+    // Функция для вычисления среднего цвета блока
+    private fun getAverageColor(bitmap: Bitmap, startX: Int, startY: Int, blockSize: Int): Int {
+        var red = 0
+        var green = 0
+        var blue = 0
+
+        val maxX = minOf(startX + blockSize, bitmap.width)
+        val maxY = minOf(startY + blockSize, bitmap.height)
+
+        // Суммируем значения цветов всех пикселей в блоке
+        for (x in startX until maxX) {
+            for (y in startY until maxY) {
+                val color = bitmap.getPixel(x, y)
+                red += Color.red(color)
+                green += Color.green(color)
+                blue += Color.blue(color)
+            }
+        }
+
+        // Вычисляем средний цвет для блока
+        val pixelCount = blockSize * blockSize
+        red /= pixelCount
+        green /= pixelCount
+        blue /= pixelCount
+
+        return Color.rgb(red, green, blue)
+    }
+
+    // Функция для применения фильтра негатива к изображению
+    fun negativeFilter(bitmap: Bitmap): Bitmap {
+        // Создаем новый битмап для результата
+        val newBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
+
+        // Проходим по каждому пикселю в изображении
+        for (x in 0 until bitmap.width) {
+            for (y in 0 until bitmap.height) {
+                // Получаем цвет текущего пикселя
+                val color = bitmap.getPixel(x, y)
+
+                // Вычисляем негативный цвет для текущего пикселя
+                val negativeColor = getNegativeColor(color)
+
+                // Устанавливаем негативный цвет для пикселя в результирующем изображении
+                newBitmap.setPixel(x, y, negativeColor)
+            }
+        }
+        chosenImageBitmap = newBitmap
+        return newBitmap
+    }
+
+    // Функция для вычисления негативного цвета
+    private fun getNegativeColor(color: Int): Int {
+        val alpha = Color.alpha(color)
+        val red = 255 - Color.red(color)
+        val green = 255 - Color.green(color)
+        val blue = 255 - Color.blue(color)
+        return Color.argb(alpha, red, green, blue)
     }
 
 }
