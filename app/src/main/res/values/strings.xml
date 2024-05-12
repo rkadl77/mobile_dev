@@ -10,4 +10,5 @@
     <string name="rotateButtonText">Rotate</string>
     <string name="projectName">imageEditor</string>
     <string name="GausseBlurButtonText">Gaussian Blur</string>
+    <string name="rotateApplyButtonText">Apply</string>
 </resources>

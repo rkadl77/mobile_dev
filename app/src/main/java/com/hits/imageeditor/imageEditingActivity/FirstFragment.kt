@@ -10,6 +10,7 @@ import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -32,6 +33,7 @@ class FirstFragment : Fragment() {
     private var chosenImageUri: Uri? = null
     private var chosenImageBitmap: Bitmap? = null
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,7 +50,9 @@ class FirstFragment : Fragment() {
             context?.let { context ->
                 getBitmapFromUri(context, uri)
             }
+
         }
+
 
         binding.buttonFirst.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
@@ -56,51 +60,63 @@ class FirstFragment : Fragment() {
 
         binding.imageView.setImageURI(chosenImageUri)
 
-        binding.firstAlghoritm.setOnClickListener {
+        //Диапазонный ввод для алгоритма поворота изображения
+        binding.firstAlghoritm.setOnClickListener{
+            binding.userInputSettings.displayedChild = 0
+
+        }
+
+
+        binding.rotateSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                binding.rotateSeekBarValue.text = (progress * 90).toString()
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        })
+
+        binding.rotateApplyButton.setOnClickListener {
             chosenImageBitmap?.let { bitmap ->
-                val rotatedImage = rotateImage(bitmap, 90)
+                val rotatedImage = rotateImage(bitmap, binding.rotateSeekBar.progress * 90)
                 binding.imageView.setImageBitmap(rotatedImage)
             }
         }
+
+        //Диапазонный ввод для алгоритма изменения масштаба изображения
+        val resizeSeekBar = binding.resizeSeekBar
+        resizeSeekBar.min = -20
+        resizeSeekBar.max = 20
+        resizeSeekBar.progress = 0
+
         binding.secondAlghoritm.setOnClickListener {
+            binding.userInputSettings.displayedChild = 1
+        }
+
+        binding.resizeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                binding.resizeSeekBarValue.text = (progress / 10.0).toString()
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        })
+
+        binding.resizeApplyButton.setOnClickListener{
             chosenImageBitmap?.let { bitmap ->
-                val scaleFactor = 0.5f // Пример коэффициента масштабирования
+                val scaleFactor = binding.resizeSeekBar.progress/10.0f
                 val resizedBitmap = scaleImage(bitmap, scaleFactor)
                 binding.imageView.setImageBitmap(resizedBitmap)
             }
         }
 
-        binding.gausinButton.setOnClickListener {
-            chosenImageBitmap?.let { bitmap ->
-                val blurBitmap = gaussianBlur(bitmap, 12)
-                // Обработка измененного изображения
-                binding.imageView.setImageBitmap(blurBitmap)
-            }
-        }
 
         binding.buttonFirst.setOnClickListener {
             chosenImageBitmap?.let { bitmap ->
-                // Сохранение изображения
                 saveImageToStorage(bitmap)
             }
         }
 
-
-        binding.mosaicButton.setOnClickListener {
-            chosenImageBitmap?.let { bitmap ->
-                val mosaicBitmap = mosaicFilter(bitmap, 20)
-                // Обработка измененного изображения
-                binding.imageView.setImageBitmap(mosaicBitmap)
-            }
-        }
-
-        binding.negativeButton.setOnClickListener {
-            chosenImageBitmap?.let { bitmap ->
-                val negativeBitmap = negativeFilter(bitmap)
-                // Обработка измененного изображения
-                binding.imageView.setImageBitmap(negativeBitmap)
-            }
-        }
 
         binding.buttonBack.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_MainActivity)
@@ -108,8 +124,15 @@ class FirstFragment : Fragment() {
 
         binding.undoButton.setOnClickListener {
             chosenImageUri = activity?.intent?.getParcelableExtra("Debug")
+            chosenImageBitmap = chosenImageUri?.let { uri ->
+                context?.let { context ->
+                    getBitmapFromUri(context, uri)
+                }
+            }
             binding.imageView.setImageURI(chosenImageUri)
         }
+
+
 
     }
     private fun saveImageToStorage(bitmap: Bitmap) {
@@ -161,14 +184,24 @@ class FirstFragment : Fragment() {
     private fun rotateImage(bitmap: Bitmap, degrees: Int): Bitmap {
         val width = bitmap.width
         val height = bitmap.height
-
-        val newBitmap = Bitmap.createBitmap(height, width, Bitmap.Config.ARGB_8888)
+        val newWidth = if (degrees == 90 || degrees == 270) height else width
+        val newHeight = if (degrees == 90 || degrees == 270) width else height
+        val newBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
 
         for (x in 0 until width) {
             for (y in 0 until height) {
-                val newX = if (degrees == 90 || degrees == 270) height - y - 1 else y
-                val newY = if (degrees == 90 || degrees == 270) x else width - x - 1
-
+                val newX = when (degrees) {
+                    90 -> height - y - 1
+                    180 -> width - x - 1
+                    270 -> y
+                    else -> x
+                }
+                val newY = when (degrees) {
+                    90 -> x
+                    180 -> height - y - 1
+                    270 -> width - x - 1
+                    else -> y
+                }
                 val pixel = bitmap.getPixel(x, y)
                 newBitmap.setPixel(newX, newY, pixel)
             }
@@ -177,6 +210,7 @@ class FirstFragment : Fragment() {
         chosenImageBitmap = newBitmap
         return newBitmap
     }
+
 
     private fun scaleImage(inputBitmap: Bitmap, scaleFactor: Float): Bitmap {
         val width = inputBitmap.width

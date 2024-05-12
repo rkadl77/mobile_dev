@@ -10,17 +10,6 @@
     android:padding="16dp"
     tools:context=".imageEditingActivity.FirstFragment">
 
-    <Button
-        android:id="@+id/button_first"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="700dp"
-        android:text="@string/next"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="415dp"
@@ -62,87 +51,190 @@
             android:src="@drawable/restart_svgrepo_com"
             tools:ignore="ContentDescription" />
 
+        <Button
+            android:id="@+id/button_first"
+            android:layout_width="114dp"
+            android:layout_height="47dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="79dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="82dp"
+            android:layout_toStartOf="@+id/undoButton"
+            android:layout_toEndOf="@+id/buttonBack"
+            android:text="@string/next" />
 
 
     </RelativeLayout>
 
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView2"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView">
 
+        <RelativeLayout
+            android:layout_width="396dp"
+            android:layout_height="62dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.516"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView"
+            app:layout_constraintVertical_bias="0.598">
 
-        <ImageButton
-            android:id="@+id/firstAlghoritm"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@id/undoButton"
-            android:background="@android:color/transparent"
-            android:src="@drawable/rotate_360_svgrepo_com"
-            tools:ignore="ContentDescription,NotSibling" />
+            <ImageButton
+                android:id="@+id/firstAlghoritm"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_alignParentTop="true"
+                android:background="@android:color/transparent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:src="@drawable/rotate_360_svgrepo_com"
+                tools:ignore="ContentDescription,NotSibling" />
 
-        <ImageButton
-            android:id="@+id/secondAlghoritm"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@id/firstAlghoritm"
-            android:background="@android:color/transparent"
-            android:src="@drawable/resize_image_svgrepo_com"
-            tools:ignore="ContentDescription" />
+            <ImageButton
+                android:id="@+id/secondAlghoritm"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="12dp"
+                android:layout_toEndOf="@id/firstAlghoritm"
+                android:background="@android:color/transparent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:src="@drawable/resize_image_svgrepo_com"
+                tools:ignore="ContentDescription" />
 
-        <ImageButton
-            android:id="@+id/gausinButton"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@id/secondAlghoritm"
-            android:background="@android:color/transparent"
-            android:src="@drawable/blur_svgrepo_com"
-            tools:ignore="ContentDescription" />
+            <ImageButton
+                android:id="@+id/gausinButton"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="12dp"
+                android:layout_toEndOf="@id/secondAlghoritm"
+                android:background="@android:color/transparent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:src="@drawable/blur_svgrepo_com"
+                tools:ignore="ContentDescription" />
 
-        <ImageButton
-            android:id="@+id/negativeButton"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@id/gausinButton"
-            android:background="@android:color/transparent"
-            android:src="@drawable/negative_svgrepo_com"
-            tools:ignore="ContentDescription" />
+            <ImageButton
+                android:id="@+id/negativeButton"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="12dp"
+                android:layout_toEndOf="@id/gausinButton"
+                android:background="@android:color/transparent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:src="@drawable/negative_svgrepo_com"
+                tools:ignore="ContentDescription" />
 
-        <ImageButton
-            android:id="@+id/mosaicButton"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@id/negativeButton"
-            android:background="@android:color/transparent"
-            android:src="@drawable/mosaic_svgrepo_com"
-            tools:ignore="ContentDescription" />
+            <ImageButton
+                android:id="@+id/mosaicButton"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="12dp"
+                android:layout_toEndOf="@id/negativeButton"
+                android:background="@android:color/transparent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:src="@drawable/mosaic_svgrepo_com"
+                tools:ignore="ContentDescription" />
 
-        <ImageButton
-            android:id="@+id/cubeButton"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@id/mosaicButton"
-            android:background="@android:color/transparent"
-            android:src="@drawable/cube_svgrepo_com"
-            tools:ignore="ContentDescription" />
+            <ImageButton
+                android:id="@+id/cubeButton"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="12dp"
+                android:layout_toEndOf="@id/mosaicButton"
+                android:background="@android:color/transparent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:src="@drawable/cube_svgrepo_com"
+                tools:ignore="ContentDescription" />
 
-    </RelativeLayout>
+        </RelativeLayout>
+    </HorizontalScrollView>
+
+    <ViewSwitcher
+        android:id="@+id/userInputSettings"
+        android:layout_width="363dp"
+        android:layout_height="67dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView2">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <SeekBar
+                android:id="@+id/rotateSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="28dp"
+                android:max="4" />
+
+            <TextView
+                android:id="@+id/rotateSeekBarValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="152dp"
+                android:layout_marginEnd="153dp"
+                android:layout_marginBottom="11dp"
+                android:text="0" />
+
+            <Button
+                android:id="@+id/rotateApplyButton"
+                android:layout_width="104dp"
+                android:layout_height="38dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="11dp"
+                android:text="@string/rotateApplyButtonText" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <SeekBar
+                android:id="@+id/resizeSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="28dp"
+                android:max="100" />
+
+            <TextView
+                android:id="@+id/resizeSeekBarValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="152dp"
+                android:layout_marginEnd="153dp"
+                android:layout_marginBottom="11dp"
+                android:text="0" />
+
+            <Button
+                android:id="@+id/resizeApplyButton"
+                android:layout_width="104dp"
+                android:layout_height="38dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="11dp"
+                android:text="@string/rotateApplyButtonText" />
+        </RelativeLayout>
+
+
+    </ViewSwitcher>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
