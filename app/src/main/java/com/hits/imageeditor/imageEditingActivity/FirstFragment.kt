@@ -3,6 +3,7 @@ package com.hits.imageeditor.imageEditingActivity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -54,22 +55,22 @@ class FirstFragment : Fragment() {
         }
 
 
-        binding.buttonFirst.setOnClickListener {
+        binding.buttonBack.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
 
         binding.imageView.setImageURI(chosenImageUri)
 
         //Диапазонный ввод для алгоритма поворота изображения
-        binding.firstAlghoritm.setOnClickListener{
-            binding.userInputSettings.displayedChild = 0
+        binding.rotateAlghoritm.setOnClickListener{
+            binding.userInputSettings.displayedChild = 1
 
         }
 
 
         binding.rotateSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                binding.rotateSeekBarValue.text = (progress * 90).toString()
+                binding.rotateSeekBarValue.text = progress.toString()
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -78,7 +79,7 @@ class FirstFragment : Fragment() {
 
         binding.rotateApplyButton.setOnClickListener {
             chosenImageBitmap?.let { bitmap ->
-                val rotatedImage = rotateImage(bitmap, binding.rotateSeekBar.progress * 90)
+                val rotatedImage = rotateImage(bitmap, binding.rotateSeekBar.progress * 1f)
                 binding.imageView.setImageBitmap(rotatedImage)
             }
         }
@@ -89,8 +90,8 @@ class FirstFragment : Fragment() {
         resizeSeekBar.max = 20
         resizeSeekBar.progress = 0
 
-        binding.secondAlghoritm.setOnClickListener {
-            binding.userInputSettings.displayedChild = 1
+        binding.resizeAlghoritm.setOnClickListener {
+            binding.userInputSettings.displayedChild = 2
         }
 
         binding.resizeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -110,8 +111,40 @@ class FirstFragment : Fragment() {
             }
         }
 
+        binding.filtersButton.setOnClickListener{
+            binding.userInputSettings.displayedChild = 3
+        }
 
-        binding.buttonFirst.setOnClickListener {
+        binding.mosaicButton.setOnClickListener {
+            chosenImageBitmap?.let { bitmap ->
+                val mosaicBitmap = mosaicFilter(bitmap, 20)
+                binding.imageView.setImageBitmap(mosaicBitmap)
+            }
+        }
+
+        binding.negativeButton.setOnClickListener {
+            chosenImageBitmap?.let { bitmap ->
+                val negativeBitmap = negativeFilter(bitmap)
+                binding.imageView.setImageBitmap(negativeBitmap)
+            }
+        }
+
+        binding.gausinButton.setOnClickListener {
+            chosenImageBitmap?.let { bitmap ->
+                val blurBitmap = gaussianBlur(bitmap, 12)
+                binding.imageView.setImageBitmap(blurBitmap)
+            }
+        }
+
+        binding.unsharpMaskingButton.setOnClickListener {
+            chosenImageBitmap?.let { bitmap ->
+                val sharpedBitmap = unsharpMasking(bitmap)
+                binding.imageView.setImageBitmap(sharpedBitmap)
+            }
+        }
+
+
+        binding.saveButton.setOnClickListener {
             chosenImageBitmap?.let { bitmap ->
                 saveImageToStorage(bitmap)
             }
@@ -181,34 +214,134 @@ class FirstFragment : Fragment() {
         return null
     }
 
-    private fun rotateImage(bitmap: Bitmap, degrees: Int): Bitmap {
+    private fun rotateImage(bitmap: Bitmap, degrees: Float): Bitmap {
+        val radians = Math.toRadians(degrees.toDouble())
+        val cos = Math.cos(radians)
+        val sin = Math.sin(radians)
+
         val width = bitmap.width
         val height = bitmap.height
-        val newWidth = if (degrees == 90 || degrees == 270) height else width
-        val newHeight = if (degrees == 90 || degrees == 270) width else height
+        val newWidth = (Math.abs(width * cos) + Math.abs(height * sin)).toInt()
+        val newHeight = (Math.abs(width * sin) + Math.abs(height * cos)).toInt()
+
         val newBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
 
-        for (x in 0 until width) {
-            for (y in 0 until height) {
-                val newX = when (degrees) {
-                    90 -> height - y - 1
-                    180 -> width - x - 1
-                    270 -> y
-                    else -> x
+        val px = width / 2
+        val py = height / 2
+
+        for (x in 0 until newWidth) {
+            for (y in 0 until newHeight) {
+                val ax = x - newWidth / 2
+                val ay = y - newHeight / 2
+                val srcX = (ax * cos + ay * sin + px).toInt()
+                val srcY = (-ax * sin + ay * cos + py).toInt()
+
+                if (srcX >= 0 && srcX < width && srcY >= 0 && srcY < height) {
+                    newBitmap.setPixel(x, y, bitmap.getPixel(srcX, srcY))
+                } else {
+                    newBitmap.setPixel(x, y, Color.BLACK)
                 }
-                val newY = when (degrees) {
-                    90 -> x
-                    180 -> height - y - 1
-                    270 -> width - x - 1
-                    else -> y
-                }
-                val pixel = bitmap.getPixel(x, y)
-                newBitmap.setPixel(newX, newY, pixel)
             }
         }
 
         chosenImageBitmap = newBitmap
         return newBitmap
+    }
+
+    private fun unsharpMasking(bitmap: Bitmap, radius: Int = 2, amount: Float = 0.5f): Bitmap {
+        val blurredBitmap = boxBlur(bitmap, radius)
+
+        val maskBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
+        for (x in 0 until bitmap.width) {
+            for (y in 0 until bitmap.height) {
+                val pixel = bitmap.getPixel(x, y)
+                val blurredPixel = blurredBitmap.getPixel(x, y)
+                val redDiff = Color.red(pixel) - Color.red(blurredPixel)
+                val greenDiff = Color.green(pixel) - Color.green(blurredPixel)
+                val blueDiff = Color.blue(pixel) - Color.blue(blurredPixel)
+                val alpha = Color.alpha(pixel)
+                val newPixel = Color.argb(
+                    alpha,
+                    clamp((Color.red(pixel) + redDiff * amount).toInt()),
+                    clamp((Color.green(pixel) + greenDiff * amount).toInt()),
+                    clamp((Color.blue(pixel) + blueDiff * amount).toInt())
+                )
+                maskBitmap.setPixel(x, y, newPixel)
+            }
+        }
+
+        val resultBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
+        for (x in 0 until bitmap.width) {
+            for (y in 0 until bitmap.height) {
+                val pixel = bitmap.getPixel(x, y)
+                val maskPixel = maskBitmap.getPixel(x, y)
+                val alpha = Color.alpha(pixel)
+                val newPixel = Color.argb(
+                    alpha,
+                    clamp(Color.red(pixel) + Color.red(maskPixel)),
+                    clamp(Color.green(pixel) + Color.green(maskPixel)),
+                    clamp(Color.blue(pixel) + Color.blue(maskPixel))
+                )
+                resultBitmap.setPixel(x, y, newPixel)
+            }
+        }
+
+        chosenImageBitmap = resultBitmap
+        return resultBitmap
+    }
+
+    private fun clamp(value: Int): Int {
+        return value.coerceIn(0, 255)
+    }
+
+
+    private fun boxBlur(bitmap: Bitmap, radius: Int): Bitmap {
+        val blurredBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
+
+        val pixels = IntArray(bitmap.width * bitmap.height)
+        bitmap.getPixels(pixels, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+
+        val blurredPixels = IntArray(bitmap.width * bitmap.height)
+
+        for (y in 0 until bitmap.height) {
+            for (x in 0 until bitmap.width) {
+                var red = 0
+                var green = 0
+                var blue = 0
+                var alpha = 0
+
+                var count = 0
+
+                for (dy in -radius..radius) {
+                    for (dx in -radius..radius) {
+                        val nx = x + dx
+                        val ny = y + dy
+
+                        if (nx in 0 until bitmap.width && ny in 0 until bitmap.height) {
+                            val pixel = pixels[ny * bitmap.width + nx]
+                            red += Color.red(pixel)
+                            green += Color.green(pixel)
+                            blue += Color.blue(pixel)
+                            alpha += Color.alpha(pixel)
+                            count++
+                        }
+                    }
+                }
+
+                val avgRed = red / count
+                val avgGreen = green / count
+                val avgBlue = blue / count
+                val avgAlpha = alpha / count
+
+                val blurredPixel = Color.argb(avgAlpha, avgRed, avgGreen, avgBlue)
+
+                blurredPixels[y * bitmap.width + x] = blurredPixel
+            }
+        }
+
+        blurredBitmap.setPixels(blurredPixels, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+
+        return blurredBitmap
     }
 
 

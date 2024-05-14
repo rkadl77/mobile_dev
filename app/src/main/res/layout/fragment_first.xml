@@ -52,7 +52,7 @@
             tools:ignore="ContentDescription" />
 
         <Button
-            android:id="@+id/button_first"
+            android:id="@+id/saveButton"
             android:layout_width="114dp"
             android:layout_height="47dp"
             android:layout_alignParentTop="true"
@@ -87,7 +87,7 @@
             app:layout_constraintVertical_bias="0.598">
 
             <ImageButton
-                android:id="@+id/firstAlghoritm"
+                android:id="@+id/rotateAlghoritm"
                 android:layout_width="52dp"
                 android:layout_height="52dp"
                 android:layout_alignParentTop="true"
@@ -97,52 +97,30 @@
                 tools:ignore="ContentDescription,NotSibling" />
 
             <ImageButton
-                android:id="@+id/secondAlghoritm"
+                android:id="@+id/resizeAlghoritm"
                 android:layout_width="52dp"
                 android:layout_height="52dp"
                 android:layout_alignParentTop="true"
                 android:layout_marginStart="12dp"
-                android:layout_toEndOf="@id/firstAlghoritm"
+                android:layout_toEndOf="@id/rotateAlghoritm"
                 android:background="@android:color/transparent"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:src="@drawable/resize_image_svgrepo_com"
                 tools:ignore="ContentDescription" />
 
             <ImageButton
-                android:id="@+id/gausinButton"
+                android:id="@+id/filtersButton"
                 android:layout_width="52dp"
                 android:layout_height="52dp"
                 android:layout_alignParentTop="true"
                 android:layout_marginStart="12dp"
-                android:layout_toEndOf="@id/secondAlghoritm"
+                android:layout_toEndOf="@id/resizeAlghoritm"
                 android:background="@android:color/transparent"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:src="@drawable/blur_svgrepo_com"
+                android:src="@drawable/filter_alt_svgrepo_com"
                 tools:ignore="ContentDescription" />
 
-            <ImageButton
-                android:id="@+id/negativeButton"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:layout_alignParentTop="true"
-                android:layout_marginStart="12dp"
-                android:layout_toEndOf="@id/gausinButton"
-                android:background="@android:color/transparent"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:src="@drawable/negative_svgrepo_com"
-                tools:ignore="ContentDescription" />
 
-            <ImageButton
-                android:id="@+id/mosaicButton"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:layout_alignParentTop="true"
-                android:layout_marginStart="12dp"
-                android:layout_toEndOf="@id/negativeButton"
-                android:background="@android:color/transparent"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:src="@drawable/mosaic_svgrepo_com"
-                tools:ignore="ContentDescription" />
 
             <ImageButton
                 android:id="@+id/cubeButton"
@@ -150,24 +128,43 @@
                 android:layout_height="52dp"
                 android:layout_alignParentTop="true"
                 android:layout_marginStart="12dp"
-                android:layout_toEndOf="@id/mosaicButton"
+                android:layout_toEndOf="@id/filtersButton"
                 android:background="@android:color/transparent"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:src="@drawable/cube_svgrepo_com"
                 tools:ignore="ContentDescription" />
 
+            <ImageButton
+                android:id="@+id/unsharpMaskingButton"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="12dp"
+                android:layout_toEndOf="@id/cubeButton"
+                android:background="@android:color/transparent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:src="@drawable/sharpness_filled_svgrepo_com"
+                tools:ignore="ContentDescription" />
+
         </RelativeLayout>
     </HorizontalScrollView>
 
-    <ViewSwitcher
+    <ViewFlipper
         android:id="@+id/userInputSettings"
         android:layout_width="363dp"
         android:layout_height="67dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView2">
+        app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView2"
+        android:inAnimation="@anim/nav_default_pop_enter_anim"
+        android:outAnimation="@anim/nav_default_pop_exit_anim">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -177,7 +174,7 @@
                 android:id="@+id/rotateSeekBar"
                 android:layout_width="match_parent"
                 android:layout_height="28dp"
-                android:max="4" />
+                android:max="360" />
 
             <TextView
                 android:id="@+id/rotateSeekBarValue"
@@ -233,8 +230,56 @@
                 android:text="@string/rotateApplyButtonText" />
         </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="62dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView"
+            app:layout_constraintVertical_bias="0.598">
 
-    </ViewSwitcher>
+            <!-- ImageButton 1 -->
+            <ImageButton
+                android:id="@+id/gausinButton"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="82dp"
+                android:background="@android:color/transparent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:src="@drawable/blur_svgrepo_com"
+                tools:ignore="ContentDescription" />
+
+            <!-- ImageButton 2 -->
+            <ImageButton
+                android:id="@+id/negativeButton"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="12dp"
+                android:layout_toEndOf="@id/gausinButton"
+                android:background="@android:color/transparent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:src="@drawable/negative_svgrepo_com"
+                tools:ignore="ContentDescription" />
+
+            <!-- ImageButton 3 -->
+            <ImageButton
+                android:id="@+id/mosaicButton"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="12dp"
+                android:layout_toEndOf="@id/negativeButton"
+                android:background="@android:color/transparent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:src="@drawable/mosaic_svgrepo_com"
+                tools:ignore="ContentDescription" />
+
+        </RelativeLayout>
+
+
+    </ViewFlipper>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
