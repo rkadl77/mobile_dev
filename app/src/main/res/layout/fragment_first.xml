@@ -12,8 +12,8 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="415dp"
-        android:layout_height="350dp"
+        android:layout_width="418dp"
+        android:layout_height="417dp"
         android:src="@android:drawable/screen_background_dark_transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -144,6 +144,18 @@
                 android:background="@android:color/transparent"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:src="@drawable/sharpness_filled_svgrepo_com"
+                tools:ignore="ContentDescription" />
+
+            <ImageButton
+                android:id="@+id/retouchButton"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="12dp"
+                android:layout_toEndOf="@id/unsharpMaskingButton"
+                android:background="@android:color/transparent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:src="@drawable/circle_with_left_half_black_svgrepo_com"
                 tools:ignore="ContentDescription" />
 
         </RelativeLayout>
