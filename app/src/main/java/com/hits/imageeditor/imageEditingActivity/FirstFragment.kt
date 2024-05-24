@@ -1,4 +1,5 @@
 package com.hits.imageeditor.imageEditingActivity
+import com.hits.imageeditor.imageEditingActivity.processing.DrawView
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -31,8 +32,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-
-
 class FirstFragment : Fragment() {
 
     private var _binding: FragmentFirstBinding? = null
@@ -48,6 +47,7 @@ class FirstFragment : Fragment() {
     private val filterImage = FilterImage()
     private val retouchImage = RetouchImage()
 
+    private lateinit var drawView: DrawView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,23 +66,36 @@ class FirstFragment : Fragment() {
             context?.let { context ->
                 getBitmapFromUri(context, uri)
             }?.copy(Bitmap.Config.ARGB_8888, true)
-
         }
 
+        binding.imageView.setImageBitmap(chosenImageBitmap)
+
+        // Initialize DrawView
+        drawView = view.findViewById(R.id.drawView)
+        chosenImageBitmap?.let { drawView.setBitmap(it) }
+
+        binding.cubeButton.setOnClickListener {
+            drawView.enableDrawing(true)
+        }
+
+        binding.saveButton.setOnClickListener {
+            val drawnBitmap = drawView.getBitmap()
+            drawnBitmap?.let { bitmap ->
+                saveImageToStorage(bitmap)
+            }
+        }
 
         binding.buttonBack.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
 
-        binding.imageView.setImageBitmap(chosenImageBitmap)
+        // Rest of the button listeners and logic
 
-        //Диапазонный ввод для алгоритма поворота изображения
+        // Диапазонный ввод для алгоритма поворота изображения
         binding.rotateAlghoritm.setOnClickListener {
             isRetouchMode = false
             binding.userInputSettings.displayedChild = 1
-
         }
-
 
         binding.rotateSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -98,14 +111,15 @@ class FirstFragment : Fragment() {
                 val rotatedImage = rotateImage.rotateImage(bitmap, binding.rotateSeekBar.progress * 1f)
                 chosenImageBitmap = rotatedImage
                 binding.imageView.setImageBitmap(rotatedImage)
+                drawView.setBitmap(rotatedImage)
             }
         }
 
-        //Диапазонный ввод для алгоритма изменения масштаба изображения
+        // Диапазонный ввод для алгоритма изменения масштаба изображения
         val resizeSeekBar = binding.resizeSeekBar
-        resizeSeekBar.min = -20
+        resizeSeekBar.min = 0
         resizeSeekBar.max = 20
-        resizeSeekBar.progress = 0
+        resizeSeekBar.progress = 10
 
         binding.resizeAlghoritm.setOnClickListener {
             isRetouchMode = false
@@ -258,11 +272,6 @@ class FirstFragment : Fragment() {
                 }
             }
             true
-        }
-
-        binding.vectorButton.setOnClickListener {
-            isRetouchMode = false
-            binding.userInputSettings.displayedChild = 6
         }
 
 
