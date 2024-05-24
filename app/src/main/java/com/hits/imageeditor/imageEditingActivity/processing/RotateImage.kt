@@ -45,10 +45,6 @@ class RotateImage {
 
         newBitmap.setPixels(newPixels, 0, newWidth, 0, 0, newWidth, newHeight)
 
-        val rotatedAndScaledBitmap = Bitmap.createScaledBitmap(
-            newBitmap, width, height, true
-        )
-
-        return rotatedAndScaledBitmap
+        return newBitmap
     }
 }

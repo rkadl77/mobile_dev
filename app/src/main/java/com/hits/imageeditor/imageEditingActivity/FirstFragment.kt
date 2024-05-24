@@ -1,13 +1,16 @@
 package com.hits.imageeditor.imageEditingActivity
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
+import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
@@ -18,6 +21,7 @@ import com.hits.imageeditor.R
 import com.hits.imageeditor.databinding.FragmentFirstBinding
 import com.hits.imageeditor.imageEditingActivity.processing.FilterImage
 import com.hits.imageeditor.imageEditingActivity.processing.ResizeImage
+import com.hits.imageeditor.imageEditingActivity.processing.RetouchImage
 import com.hits.imageeditor.imageEditingActivity.processing.RotateImage
 import java.io.File
 import java.io.FileOutputStream
@@ -26,14 +30,6 @@ import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 
 
@@ -45,9 +41,12 @@ class FirstFragment : Fragment() {
     private var chosenImageUri: Uri? = null
     private var chosenImageBitmap: Bitmap? = null
 
+    private var isRetouchMode = false
+
     private val rotateImage = RotateImage()
     private val resizeImage = ResizeImage()
     private val filterImage = FilterImage()
+    private val retouchImage = RetouchImage()
 
 
     override fun onCreateView(
@@ -58,6 +57,7 @@ class FirstFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -65,7 +65,7 @@ class FirstFragment : Fragment() {
         chosenImageBitmap = chosenImageUri?.let { uri ->
             context?.let { context ->
                 getBitmapFromUri(context, uri)
-            }
+            }?.copy(Bitmap.Config.ARGB_8888, true)
 
         }
 
@@ -74,10 +74,11 @@ class FirstFragment : Fragment() {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
 
-        binding.imageView.setImageURI(chosenImageUri)
+        binding.imageView.setImageBitmap(chosenImageBitmap)
 
         //Диапазонный ввод для алгоритма поворота изображения
         binding.rotateAlghoritm.setOnClickListener {
+            isRetouchMode = false
             binding.userInputSettings.displayedChild = 1
 
         }
@@ -107,6 +108,7 @@ class FirstFragment : Fragment() {
         resizeSeekBar.progress = 0
 
         binding.resizeAlghoritm.setOnClickListener {
+            isRetouchMode = false
             binding.userInputSettings.displayedChild = 2
         }
 
@@ -128,7 +130,10 @@ class FirstFragment : Fragment() {
             }
         }
 
+
+        //Фильтры
         binding.filtersButton.setOnClickListener {
+            isRetouchMode = false
             binding.userInputSettings.displayedChild = 3
         }
 
@@ -156,13 +161,105 @@ class FirstFragment : Fragment() {
             }
         }
 
+        // диапозонный ввод для нерезкого маскирования
         binding.unsharpMaskingButton.setOnClickListener {
+            isRetouchMode = false
+            binding.userInputSettings.displayedChild = 4
+        }
+
+        binding.maskingAmountSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            @SuppressLint("SetTextI18n")
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                binding.maskingAmountSeekBarValue.text = "Amount: ${(progress / 100.0)}"
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        })
+
+        binding.maskingRadiusSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            @SuppressLint("SetTextI18n")
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                binding.maskingRadiusSeekBarValue.text = "Radius: ${(progress / 2.0)}"
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        })
+
+        binding.maskingThresholdSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            @SuppressLint("SetTextI18n")
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                binding.maskingThresholdSeekBarValue.text = "Threshold: ${(progress / 2.0)}"
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        })
+
+        binding.maskingApplyButton.setOnClickListener {
             chosenImageBitmap?.let { bitmap ->
-                val sharpedBitmap = filterImage.unsharpMasking(bitmap)
-                chosenImageBitmap = sharpedBitmap
-                binding.imageView.setImageBitmap(sharpedBitmap)
+                val radius = binding.maskingRadiusSeekBar.progress / 2
+                val amount = binding.maskingAmountSeekBar.progress / 100.0f
+                val threshold = binding.maskingThresholdSeekBar.progress / 2
+                val maskedBitmap = filterImage.unsharpMasking(bitmap, radius, amount, threshold )
+                chosenImageBitmap = maskedBitmap
+                binding.imageView.setImageBitmap(maskedBitmap)
             }
         }
+
+        // диапазонный ввод для ретуширования
+        binding.retouchButton.setOnClickListener{
+            isRetouchMode = true
+            binding.userInputSettings.displayedChild = 5
+        }
+
+        binding.retouchSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            @SuppressLint("SetTextI18n")
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                binding.retouchSeekBarValue.text = progress.toString()
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        })
+
+        binding.retouchApplyButton.setOnClickListener{
+            retouchImage.setterRetouchRadius(binding.retouchSeekBar.progress)
+        }
+
+        binding.imageView.setOnTouchListener { _, event ->
+            if ( isRetouchMode && (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE)) {
+                val matrix = binding.imageView.imageMatrix
+                val values = FloatArray(9)
+                matrix.getValues(values)
+
+                val scaleX = values[Matrix.MSCALE_X]
+                val scaleY = values[Matrix.MSCALE_Y]
+                val transX = values[Matrix.MTRANS_X]
+                val transY = values[Matrix.MTRANS_Y]
+
+                val imageViewX = (event.x - transX) / scaleX
+                val imageViewY = (event.y - transY) / scaleY
+
+                val imageWidth = chosenImageBitmap?.width ?: 1
+                val imageHeight = chosenImageBitmap?.height ?: 1
+
+                val bitmapX = imageViewX.coerceIn(0f, (imageWidth - 1).toFloat()).toInt()
+                val bitmapY = imageViewY.coerceIn(0f, (imageHeight - 1).toFloat()).toInt()
+
+                chosenImageBitmap?.let {
+                    try {
+                        retouchImage.retouchBitmap(it, bitmapX, bitmapY, retouchImage.retouchRadius)
+                        binding.imageView.setImageBitmap(it)
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Error during retouching", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            true
+        }
+
 
 
         binding.saveButton.setOnClickListener {
@@ -182,8 +279,8 @@ class FirstFragment : Fragment() {
                 context?.let { context ->
                     getBitmapFromUri(context, uri)
                 }
-            }
-            binding.imageView.setImageURI(chosenImageUri)
+            }?.copy(Bitmap.Config.ARGB_8888, true)
+            binding.imageView.setImageBitmap(chosenImageBitmap)
         }
 
 
@@ -214,11 +311,9 @@ class FirstFragment : Fragment() {
             fileOutputStream.flush()
             fileOutputStream.close()
 
-            // Уведомление об успешном сохранении
             showToast("Image successfully saved")
         } catch (e: IOException) {
             e.printStackTrace()
-            // Обработка ошибки сохранения
             showToast("Image doesn't saved")
         }
     }
@@ -227,7 +322,8 @@ class FirstFragment : Fragment() {
         var inputStream: InputStream? = null
         try {
             inputStream = context.contentResolver.openInputStream(uri)
-            return BitmapFactory.decodeStream(inputStream)
+            val originalBitmap = BitmapFactory.decodeStream(inputStream)
+            return originalBitmap?.copy(Bitmap.Config.ARGB_8888, true)
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
@@ -235,5 +331,5 @@ class FirstFragment : Fragment() {
         }
         return null
     }
-    
+
 }

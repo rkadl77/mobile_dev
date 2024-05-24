@@ -1,48 +1,12 @@
 package com.hits.imageeditor.imageEditingActivity.processing
 
-import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
-import android.util.AttributeSet
-import android.view.MotionEvent
-import android.view.View
 
-class RetouchImage(context: Context, attrs: AttributeSet?) : View(context, attrs) {
+class RetouchImage() {
+   var retouchRadius = 0
 
-    private var bitmap: Bitmap? = null
-    private val paint = Paint()
-
-    private val touchRadius = 50
-
-    fun setImageBitmap(bitmap: Bitmap) {
-        this.bitmap = bitmap
-        invalidate()
-    }
-
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        bitmap?.let {
-            canvas.drawBitmap(it, 0f, 0f, paint)
-        }
-    }
-
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        when (event.action) {
-            MotionEvent.ACTION_MOVE -> {
-                bitmap?.let {
-                    val x = event.x.toInt()
-                    val y = event.y.toInt()
-                    retouchBitmap(it, x, y, touchRadius)
-                    invalidate()
-                }
-            }
-        }
-        return true
-    }
-
-    private fun retouchBitmap(bitmap: Bitmap, centerX: Int, centerY: Int, radius: Int) {
+     fun retouchBitmap(bitmap: Bitmap, centerX: Int, centerY: Int, radius: Int) {
         val pixels = mutableListOf<Int>()
         for (dx in -radius..radius) {
             for (dy in -radius..radius) {
@@ -77,4 +41,9 @@ class RetouchImage(context: Context, attrs: AttributeSet?) : View(context, attrs
 
         return Color.rgb(medianRed, medianGreen, medianBlue)
     }
+
+    fun setterRetouchRadius(radius: Int) {
+        retouchRadius = radius
+    }
 }
+

@@ -5,7 +5,7 @@ import android.graphics.Color
 
 class FilterImage {
     private val filterImageService = FilterImageService()
-     fun unsharpMasking(inputBitmap: Bitmap, radius: Int = 2, amount: Float = 0.8f, threshold: Int = 2): Bitmap {
+     fun unsharpMasking(inputBitmap: Bitmap, radius: Int, amount: Float , threshold: Int): Bitmap {
         val blurredBitmap = gaussianBlur(inputBitmap, radius)
 
         val maskBitmap = Bitmap.createBitmap(inputBitmap.width, inputBitmap.height, Bitmap.Config.ARGB_8888)
