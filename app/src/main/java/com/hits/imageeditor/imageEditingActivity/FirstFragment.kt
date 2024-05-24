@@ -260,6 +260,11 @@ class FirstFragment : Fragment() {
             true
         }
 
+        binding.vectorButton.setOnClickListener {
+            isRetouchMode = false
+            binding.userInputSettings.displayedChild = 6
+        }
+
 
 
         binding.saveButton.setOnClickListener {
