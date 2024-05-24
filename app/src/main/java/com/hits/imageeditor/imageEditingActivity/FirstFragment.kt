@@ -68,6 +68,7 @@ class FirstFragment : Fragment() {
             }?.copy(Bitmap.Config.ARGB_8888, true)
         }
 
+
         binding.imageView.setImageBitmap(chosenImageBitmap)
 
         // Initialize DrawView
@@ -75,7 +76,15 @@ class FirstFragment : Fragment() {
         chosenImageBitmap?.let { drawView.setBitmap(it) }
 
         binding.cubeButton.setOnClickListener {
-            drawView.enableDrawing(true)
+            val width = binding.imageView.width
+            val height = binding.imageView.height
+
+            if (width > 0 && height > 0) {
+                val newBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                drawView.setBitmap(newBitmap)
+                drawView.visibility = View.VISIBLE
+                drawView.enableDrawing(true)
+            }
         }
 
         binding.saveButton.setOnClickListener {
