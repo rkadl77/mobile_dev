@@ -1,5 +1,4 @@
 package com.hits.imageeditor.imageEditingActivity
-import com.hits.imageeditor.imageEditingActivity.processing.DrawView
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,7 +8,6 @@ import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -20,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.hits.imageeditor.R
 import com.hits.imageeditor.databinding.FragmentFirstBinding
+import com.hits.imageeditor.imageEditingActivity.processing.DrawView
 import com.hits.imageeditor.imageEditingActivity.processing.FilterImage
 import com.hits.imageeditor.imageEditingActivity.processing.ResizeImage
 import com.hits.imageeditor.imageEditingActivity.processing.RetouchImage
@@ -112,6 +111,7 @@ class FirstFragment : Fragment() {
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
         })
+
 
         binding.rotateApplyButton.setOnClickListener {
             chosenImageBitmap?.let { bitmap ->
@@ -206,6 +206,7 @@ class FirstFragment : Fragment() {
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
         })
+
 
         binding.maskingThresholdSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             @SuppressLint("SetTextI18n")
@@ -305,6 +306,7 @@ class FirstFragment : Fragment() {
 
 
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

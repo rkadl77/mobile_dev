@@ -2,6 +2,7 @@ package com.hits.imageeditor.imageEditingActivity.processing
 
 import android.graphics.Bitmap
 import android.graphics.Color
+import kotlin.math.min
 
 class FilterImageService {
     fun calculateWeights(sigma: Double): Array<DoubleArray> {
@@ -27,29 +28,23 @@ class FilterImageService {
         return weights
     }
 
-    fun getAverageColor(bitmap: Bitmap, startX: Int, startY: Int, blockSize: Int): Int {
-        var red = 0
-        var green = 0
-        var blue = 0
+    fun getAverageColor(bitmap: Bitmap, x: Int, y: Int, blockSize: Int, width: Int, height: Int): Int {
+        var redSum = 0
+        var greenSum = 0
+        var blueSum = 0
+        var pixelCount = 0
 
-        val maxX = minOf(startX + blockSize, bitmap.width)
-        val maxY = minOf(startY + blockSize, bitmap.height)
-
-        for (x in startX until maxX) {
-            for (y in startY until maxY) {
-                val color = bitmap.getPixel(x, y)
-                red += Color.red(color)
-                green += Color.green(color)
-                blue += Color.blue(color)
+        for (i in x until min(x + blockSize, width)) {
+            for (j in y until min(y + blockSize, height)) {
+                val pixel = bitmap.getPixel(i, j)
+                redSum += Color.red(pixel)
+                greenSum += Color.green(pixel)
+                blueSum += Color.blue(pixel)
+                pixelCount++
             }
         }
 
-        val pixelCount = blockSize * blockSize
-        red /= pixelCount
-        green /= pixelCount
-        blue /= pixelCount
-
-        return Color.rgb(red, green, blue)
+        return Color.rgb(redSum / pixelCount, greenSum / pixelCount, blueSum / pixelCount)
     }
 
     fun getNegativeColor(color: Int): Int {

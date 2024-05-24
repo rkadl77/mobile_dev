@@ -78,6 +78,7 @@ class ResizeImage {
         val inverseXDiff = 1.0f - xDiff
         val inverseYDiff = 1.0f - yDiff
 
+
         val a = ((topLeft shr 24 and 0xff) * inverseXDiff + (topRight shr 24 and 0xff) * xDiff) * inverseYDiff +
                 ((bottomLeft shr 24 and 0xff) * inverseXDiff + (bottomRight shr 24 and 0xff) * xDiff) * yDiff
         val r = ((topLeft shr 16 and 0xff) * inverseXDiff + (topRight shr 16 and 0xff) * xDiff) * inverseYDiff +
@@ -90,3 +91,4 @@ class ResizeImage {
         return (a.toInt() shl 24) or (r.toInt() shl 16) or (g.toInt() shl 8) or b.toInt()
     }
 }
+
