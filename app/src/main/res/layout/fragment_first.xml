@@ -76,6 +76,7 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintBottom_toBottomOf="parent"
+    android:gravity="center"
     app:layout_constraintHeight_percent="0.2">
 
     <HorizontalScrollView
@@ -94,7 +95,7 @@
             android:orientation="horizontal">
 
             <RelativeLayout
-                android:layout_width="396dp"
+                android:layout_width="wrap_content"
                 android:layout_height="62dp">
 
                 <ImageButton
@@ -164,7 +165,43 @@
                     android:layout_toEndOf="@id/unsharpMaskingButton"
                     android:background="@android:color/transparent"
                     android:foreground="?android:attr/selectableItemBackground"
-                    android:src="@drawable/circle_with_left_half_black_svgrepo_com"
+                    android:src="@drawable/circle_half_svgrepo_com"
+                    tools:ignore="ContentDescription" />
+
+                <ImageButton
+                    android:id="@+id/faceFinderButton"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="12dp"
+                    android:layout_toEndOf="@id/retouchButton"
+                    android:background="@android:color/transparent"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:src="@drawable/face_scan_square_svgrepo_com"
+                    tools:ignore="ContentDescription" />
+
+                <ImageButton
+                    android:id="@+id/vectorButton"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="12dp"
+                    android:layout_toEndOf="@id/faceFinderButton"
+                    android:background="@android:color/transparent"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:src="@drawable/vector_bezier_2_svgrepo_com"
+                    tools:ignore="ContentDescription" />
+
+                <ImageButton
+                    android:id="@+id/affineButton"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="12dp"
+                    android:layout_toEndOf="@id/vectorButton"
+                    android:background="@android:color/transparent"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:src="@drawable/coord_system_svgrepo_com"
                     tools:ignore="ContentDescription" />
 
             </RelativeLayout>
