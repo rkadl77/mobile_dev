@@ -71,11 +71,11 @@ class FirstFragment : Fragment() {
 
         binding.imageView.setImageBitmap(chosenImageBitmap)
 
-        // Initialize DrawView
+        // инцилизация DrawView
         drawView = view.findViewById(R.id.drawView)
         chosenImageBitmap?.let { drawView.setBitmap(it) }
 
-        binding.cubeButton.setOnClickListener {
+        binding.vectorButton.setOnClickListener {
             val width = binding.imageView.width
             val height = binding.imageView.height
 
@@ -97,8 +97,6 @@ class FirstFragment : Fragment() {
         binding.buttonBack.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
-
-        // Rest of the button listeners and logic
 
         // Диапазонный ввод для алгоритма поворота изображения
         binding.rotateAlghoritm.setOnClickListener {
@@ -152,7 +150,6 @@ class FirstFragment : Fragment() {
                 binding.imageView.setImageBitmap(resizedBitmap)
             }
         }
-
 
         //Фильтры
         binding.filtersButton.setOnClickListener {
