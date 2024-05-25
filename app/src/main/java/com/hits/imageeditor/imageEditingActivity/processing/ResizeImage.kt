@@ -14,7 +14,8 @@ class ResizeImage {
         val xRatio = width.toFloat() / newWidth.toFloat()
         val yRatio = height.toFloat() / newHeight.toFloat()
 
-        val interpolationFunction = if (scaleFactor > 1.0f) ::bilinearInterpolate else ::trilinearInterpolate
+        val interpolationFunction =
+            if (scaleFactor > 1.0f) ::bilinearInterpolate else ::trilinearInterpolate
 
         for (y in 0 until newHeight) {
             val originY = (y * yRatio).toInt().coerceIn(0, height - 1)
@@ -24,9 +25,14 @@ class ResizeImage {
                 val xDiff = (x * xRatio) - originX
 
                 val topLeftPixel = inputBitmap.getPixel(originX, originY)
-                val topRightPixel = inputBitmap.getPixel((originX + 1).coerceAtMost(width - 1), originY)
-                val bottomLeftPixel = inputBitmap.getPixel(originX, (originY + 1).coerceAtMost(height - 1))
-                val bottomRightPixel = inputBitmap.getPixel((originX + 1).coerceAtMost(width - 1), (originY + 1).coerceAtMost(height - 1))
+                val topRightPixel =
+                    inputBitmap.getPixel((originX + 1).coerceAtMost(width - 1), originY)
+                val bottomLeftPixel =
+                    inputBitmap.getPixel(originX, (originY + 1).coerceAtMost(height - 1))
+                val bottomRightPixel = inputBitmap.getPixel(
+                    (originX + 1).coerceAtMost(width - 1),
+                    (originY + 1).coerceAtMost(height - 1)
+                )
 
                 val interpolatedPixel = interpolationFunction(
                     topLeftPixel,
@@ -55,12 +61,15 @@ class ResizeImage {
         val inverseXDiff = 1.0f - xDiff
         val inverseYDiff = 1.0f - yDiff
 
-        val a = ((topLeft shr 24 and 0xff) * inverseXDiff + (topRight shr 24 and 0xff) * xDiff) * inverseYDiff +
-                ((bottomLeft shr 24 and 0xff) * inverseXDiff + (bottomRight shr 24 and 0xff) * xDiff) * yDiff
-        val r = ((topLeft shr 16 and 0xff) * inverseXDiff + (topRight shr 16 and 0xff) * xDiff) * inverseYDiff +
-                ((bottomLeft shr 16 and 0xff) * inverseXDiff + (bottomRight shr 16 and 0xff) * xDiff) * yDiff
-        val g = ((topLeft shr 8 and 0xff) * inverseXDiff + (topRight shr 8 and 0xff) * xDiff) * inverseYDiff +
-                ((bottomLeft shr 8 and 0xff) * inverseXDiff + (bottomRight shr 8 and 0xff) * xDiff) * yDiff
+        val a =
+            ((topLeft shr 24 and 0xff) * inverseXDiff + (topRight shr 24 and 0xff) * xDiff) * inverseYDiff +
+                    ((bottomLeft shr 24 and 0xff) * inverseXDiff + (bottomRight shr 24 and 0xff) * xDiff) * yDiff
+        val r =
+            ((topLeft shr 16 and 0xff) * inverseXDiff + (topRight shr 16 and 0xff) * xDiff) * inverseYDiff +
+                    ((bottomLeft shr 16 and 0xff) * inverseXDiff + (bottomRight shr 16 and 0xff) * xDiff) * yDiff
+        val g =
+            ((topLeft shr 8 and 0xff) * inverseXDiff + (topRight shr 8 and 0xff) * xDiff) * inverseYDiff +
+                    ((bottomLeft shr 8 and 0xff) * inverseXDiff + (bottomRight shr 8 and 0xff) * xDiff) * yDiff
         val b = ((topLeft and 0xff) * inverseXDiff + (topRight and 0xff) * xDiff) * inverseYDiff +
                 ((bottomLeft and 0xff) * inverseXDiff + (bottomRight and 0xff) * xDiff) * yDiff
 
@@ -79,12 +88,15 @@ class ResizeImage {
         val inverseYDiff = 1.0f - yDiff
 
 
-        val a = ((topLeft shr 24 and 0xff) * inverseXDiff + (topRight shr 24 and 0xff) * xDiff) * inverseYDiff +
-                ((bottomLeft shr 24 and 0xff) * inverseXDiff + (bottomRight shr 24 and 0xff) * xDiff) * yDiff
-        val r = ((topLeft shr 16 and 0xff) * inverseXDiff + (topRight shr 16 and 0xff) * xDiff) * inverseYDiff +
-                ((bottomLeft shr 16 and 0xff) * inverseXDiff + (bottomRight shr 16 and 0xff) * xDiff) * yDiff
-        val g = ((topLeft shr 8 and 0xff) * inverseXDiff + (topRight shr 8 and 0xff) * xDiff) * inverseYDiff +
-                ((bottomLeft shr 8 and 0xff) * inverseXDiff + (bottomRight shr 8 and 0xff) * xDiff) * yDiff
+        val a =
+            ((topLeft shr 24 and 0xff) * inverseXDiff + (topRight shr 24 and 0xff) * xDiff) * inverseYDiff +
+                    ((bottomLeft shr 24 and 0xff) * inverseXDiff + (bottomRight shr 24 and 0xff) * xDiff) * yDiff
+        val r =
+            ((topLeft shr 16 and 0xff) * inverseXDiff + (topRight shr 16 and 0xff) * xDiff) * inverseYDiff +
+                    ((bottomLeft shr 16 and 0xff) * inverseXDiff + (bottomRight shr 16 and 0xff) * xDiff) * yDiff
+        val g =
+            ((topLeft shr 8 and 0xff) * inverseXDiff + (topRight shr 8 and 0xff) * xDiff) * inverseYDiff +
+                    ((bottomLeft shr 8 and 0xff) * inverseXDiff + (bottomRight shr 8 and 0xff) * xDiff) * yDiff
         val b = ((topLeft and 0xff) * inverseXDiff + (topRight and 0xff) * xDiff) * inverseYDiff +
                 ((bottomLeft and 0xff) * inverseXDiff + (bottomRight and 0xff) * xDiff) * yDiff
 

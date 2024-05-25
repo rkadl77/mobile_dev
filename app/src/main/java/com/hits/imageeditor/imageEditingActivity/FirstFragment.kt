@@ -46,6 +46,7 @@ class FirstFragment : Fragment() {
     private val filterImage = FilterImage()
     private val retouchImage = RetouchImage()
 
+
     private lateinit var drawView: DrawView
 
     override fun onCreateView(
@@ -74,7 +75,10 @@ class FirstFragment : Fragment() {
         drawView = view.findViewById(R.id.drawView)
         chosenImageBitmap?.let { drawView.setBitmap(it) }
 
+        // Обработчик нажатия кнопки для отображения дополнительных кнопок
         binding.vectorButton.setOnClickListener {
+            isRetouchMode = false
+            binding.userInputSettings.displayedChild = 7
             val width = binding.imageView.width
             val height = binding.imageView.height
 
@@ -85,6 +89,27 @@ class FirstFragment : Fragment() {
                 drawView.enableDrawing(true)
             }
         }
+
+        binding.firstVectorSubButton.setOnClickListener {
+            // Очищаем текущий Path и список точек
+            drawView.clearPathAndPoints()
+
+            // Устанавливаем более толстую черную линию
+            drawView.setThickerBlackLine()
+
+            // Перерисовываем только черную линию
+            drawView.drawCanvas()
+        }
+
+        binding.secondVectorSubButton.setOnClickListener {
+            // Удаляем последнюю точку
+            drawView.removeLastPoint()
+        }
+        binding.thirdVectorSubButton.setOnClickListener {
+            drawView.clearPathAndPoints()
+            drawView.setBitmap(Bitmap.createBitmap(drawView.width, drawView.height, Bitmap.Config.ARGB_8888))
+        }
+
 
         binding.saveButton.setOnClickListener {
             val drawnBitmap = drawView.getBitmap()
@@ -115,12 +140,14 @@ class FirstFragment : Fragment() {
 
         binding.rotateApplyButton.setOnClickListener {
             chosenImageBitmap?.let { bitmap ->
-                val rotatedImage = rotateImage.rotateImage(bitmap, binding.rotateSeekBar.progress * 1f)
+                val rotatedImage =
+                    rotateImage.rotateImage(bitmap, binding.rotateSeekBar.progress * 1f)
                 chosenImageBitmap = rotatedImage
                 binding.imageView.setImageBitmap(rotatedImage)
                 drawView.setBitmap(rotatedImage)
             }
         }
+
 
         // Диапазонный ввод для алгоритма изменения масштаба изображения
         val resizeSeekBar = binding.resizeSeekBar
@@ -187,7 +214,8 @@ class FirstFragment : Fragment() {
             binding.userInputSettings.displayedChild = 4
         }
 
-        binding.maskingAmountSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        binding.maskingAmountSeekBar.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
             @SuppressLint("SetTextI18n")
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 binding.maskingAmountSeekBarValue.text = "Amount: ${(progress / 100.0)}"
@@ -197,7 +225,8 @@ class FirstFragment : Fragment() {
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
         })
 
-        binding.maskingRadiusSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        binding.maskingRadiusSeekBar.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
             @SuppressLint("SetTextI18n")
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 binding.maskingRadiusSeekBarValue.text = "Radius: ${(progress / 2.0)}"
@@ -208,7 +237,8 @@ class FirstFragment : Fragment() {
         })
 
 
-        binding.maskingThresholdSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        binding.maskingThresholdSeekBar.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
             @SuppressLint("SetTextI18n")
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 binding.maskingThresholdSeekBarValue.text = "Threshold: ${(progress / 2.0)}"
@@ -223,14 +253,14 @@ class FirstFragment : Fragment() {
                 val radius = binding.maskingRadiusSeekBar.progress / 2
                 val amount = binding.maskingAmountSeekBar.progress / 100.0f
                 val threshold = binding.maskingThresholdSeekBar.progress / 2
-                val maskedBitmap = filterImage.unsharpMasking(bitmap, radius, amount, threshold )
+                val maskedBitmap = filterImage.unsharpMasking(bitmap, radius, amount, threshold)
                 chosenImageBitmap = maskedBitmap
                 binding.imageView.setImageBitmap(maskedBitmap)
             }
         }
 
         // диапазонный ввод для ретуширования
-        binding.retouchButton.setOnClickListener{
+        binding.retouchButton.setOnClickListener {
             isRetouchMode = true
             binding.userInputSettings.displayedChild = 5
         }
@@ -245,12 +275,12 @@ class FirstFragment : Fragment() {
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
         })
 
-        binding.retouchApplyButton.setOnClickListener{
+        binding.retouchApplyButton.setOnClickListener {
             retouchImage.setterRetouchRadius(binding.retouchSeekBar.progress)
         }
 
         binding.imageView.setOnTouchListener { _, event ->
-            if ( isRetouchMode && (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE)) {
+            if (isRetouchMode && (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE)) {
                 val matrix = binding.imageView.imageMatrix
                 val values = FloatArray(9)
                 matrix.getValues(values)
@@ -274,7 +304,8 @@ class FirstFragment : Fragment() {
                         retouchImage.retouchBitmap(it, bitmapX, bitmapY, retouchImage.retouchRadius)
                         binding.imageView.setImageBitmap(it)
                     } catch (e: Exception) {
-                        Toast.makeText(context, "Error during retouching", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Error during retouching", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
             }

@@ -39,7 +39,7 @@ class DrawView(context: Context, attrs: AttributeSet?) : SurfaceView(context, at
         drawCanvas()
     }
 
-    private fun drawCanvas() {
+    fun drawCanvas() {
         val canvas = holder.lockCanvas()
         if (canvas != null) {
             canvas.drawColor(Color.WHITE)
@@ -51,6 +51,12 @@ class DrawView(context: Context, attrs: AttributeSet?) : SurfaceView(context, at
                 path.moveTo(points[0].x, points[0].y)
                 for (i in 1 until points.size) {
                     path.lineTo(points[i].x, points[i].y)
+                }
+                // Соединяем последнюю точку с первой, если точек больше одной
+                if (points.size > 1) {
+                    // Добавляем линию от последней точки к первой
+                    path.lineTo(points[0].x, points[0].y)
+                    path.close() // Замыкаем контур
                 }
                 canvas.drawPath(path, paint)
             }
@@ -66,20 +72,25 @@ class DrawView(context: Context, attrs: AttributeSet?) : SurfaceView(context, at
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
                 points.add(point)
                 drawCanvas()
+                drawSmoothCurve() // Добавляем отображение гладких кривых при каждом изменении ломаной линии
             }
         }
         return true
     }
 
-    fun enableDrawing(enabled: Boolean) {
-        isDrawingEnabled = enabled
-    }
-
-    fun transformToSpline() {
+    private fun drawSmoothCurve() {
         if (points.size > 2) {
             val splinePath = calculateSpline(points)
-            path.set(splinePath)
-            drawCanvas()
+            val smoothPaint = Paint(paint).apply {
+                color = Color.GRAY // Цвет гладких кривых
+                style = Paint.Style.STROKE
+                strokeWidth = 2f // Ширина линии гладких кривых
+            }
+            val smoothBitmap =
+                Bitmap.createBitmap(bitmap!!.width, bitmap!!.height, Bitmap.Config.ARGB_8888)
+            val smoothCanvas = Canvas(smoothBitmap)
+            smoothCanvas.drawPath(splinePath, smoothPaint)
+            canvasBitmap?.drawBitmap(smoothBitmap, 0f, 0f, null)
         }
     }
 
@@ -107,6 +118,18 @@ class DrawView(context: Context, attrs: AttributeSet?) : SurfaceView(context, at
         return splinePath
     }
 
+    fun enableDrawing(enabled: Boolean) {
+        isDrawingEnabled = enabled
+    }
+
+    fun transformToSpline() {
+        if (points.size > 2) {
+            val splinePath = calculateSpline(points)
+            path.set(splinePath)
+            drawCanvas()
+        }
+    }
+
     fun setBitmap(newBitmap: Bitmap) {
         bitmap = newBitmap.copy(Bitmap.Config.ARGB_8888, true)
         canvasBitmap = Canvas(bitmap!!)
@@ -118,5 +141,30 @@ class DrawView(context: Context, attrs: AttributeSet?) : SurfaceView(context, at
         val canvas = Canvas(resultBitmap!!)
         canvas.drawPath(path, paint)
         return resultBitmap
+    }
+
+    fun clearPathAndPoints() {
+        path.reset()
+        points.clear()
+    }
+
+    fun setThickerBlackLine() {
+        paint.strokeWidth = 10f // Устанавливаем желаемую толщину линии
+    }
+
+    fun removeLastPoint() {
+        if (points.isNotEmpty()) {
+            points.removeAt(points.size - 1)
+            drawCanvas()
+        }
+    }
+
+    fun connectFirstAndLastPoint() {
+        if (points.size > 1) {
+            path.lineTo(points[0].x, points[0].y)
+            points.add(points[0]) // Добавляем первую точку в конец списка, чтобы замкнуть путь
+            path.close() // Замыкаем контур
+            drawCanvas()
+        }
     }
 }
